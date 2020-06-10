@@ -17,9 +17,13 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(enforcedPlatform("io.quarkus:quarkus-bom:$quarkusVersion"))
     implementation("io.quarkus:quarkus-resteasy-jackson")
+    implementation("io.quarkus:quarkus-resteasy")
     implementation("io.quarkus:quarkus-rest-client")
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-config-yaml")
+    implementation("io.quarkus:quarkus-kafka-client:$quarkusVersion")
+    implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka:$quarkusVersion")
+    implementation("io.quarkus:quarkus-smallrye-reactive-messaging:$quarkusVersion")
     testImplementation("io.quarkus:quarkus-junit5")
 }
 
@@ -30,4 +34,10 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
+
+}
+
+allOpen {
+    annotation("javax.enterprise.context.ApplicationScoped")
+    annotation("javax.ws.rs.Path")
 }
