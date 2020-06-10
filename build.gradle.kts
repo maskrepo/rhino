@@ -21,6 +21,15 @@ dependencies {
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-config-yaml")
     testImplementation("io.quarkus:quarkus-junit5")
+    implementation("io.quarkus:quarkus-kafka-client:1.5.0.Final")
+    implementation("io.quarkus:quarkus-smallrye-reactive-messaging:1.5.0.Final")
+    implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka:1.5.0.Final")
+}
+
+dependencies {
+    allOpen {
+        annotation("javax.enterprise.context.ApplicationScoped")
+    }
 }
 
 tasks {
