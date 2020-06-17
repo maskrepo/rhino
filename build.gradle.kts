@@ -1,9 +1,10 @@
 val quarkusVersion: String = "1.5.0.Final"
 
 plugins {
-    kotlin("jvm") version "1.3.61"
+    kotlin("jvm") version "1.3.70"
     id ("io.quarkus") version "1.5.0.Final"
     id ("org.jetbrains.kotlin.plugin.allopen") version "1.3.72"
+    kotlin("plugin.serialization") version "1.3.70"
 }
 
 group = "fr.convergence.proddoc"
@@ -11,6 +12,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 dependencies {
@@ -24,6 +26,8 @@ dependencies {
     implementation("io.quarkus:quarkus-kafka-client:1.5.0.Final")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging:1.5.0.Final")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka:1.5.0.Final")
+    implementation("com.github.ben-manes.caffeine:caffeine:2.8.4")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:0.20.0") // JVM dependency
 }
 
 dependencies {
