@@ -8,7 +8,7 @@ import javax.ws.rs.Path
 
 @Path("/emission")
 @ApplicationScoped
-class Emetteur {
+class Producteur {
 
 /*    @Outgoing("mygreffeout")
     @GET
