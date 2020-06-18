@@ -22,7 +22,7 @@ class Consommateur {
             // ajout dans le cache
             if (!localCache.ajouter(parsedEvtParam.cle, parsedEvtParam.valeur)) println("impossible d'ajouter dans le cache : clé existante")
 
-            //@TODO la suite c'est vérifier si paramètre djà dans le cache et émettre un évènement sur le topic si c'est le cas
+            //@TODO la suite c'est vérifier si paramètre déjà dans le cache et émettre un évènement sur le topic si c'est le cas
 
         } catch (e: JsonDecodingException) {
             println("Le message reçu n'est pas un JSON au bon format : $msg")
