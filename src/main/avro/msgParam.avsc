@@ -1,0 +1,8 @@
+{"namespace": "rhino.message",
+ "type": "record",
+ "name": "Parametre",
+ "fields": [
+     {"name": "cle", "type": "string"},
+     {"name": "valeur",  "type": "string"}
+ ]
+}
