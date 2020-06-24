@@ -25,6 +25,7 @@ dependencies {
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka:$quarkusVersion")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging:$quarkusVersion")
     testImplementation("io.quarkus:quarkus-junit5")
+    implementation("io.debezium:debezium-core:1.1.2.Final")
 }
 
 tasks {

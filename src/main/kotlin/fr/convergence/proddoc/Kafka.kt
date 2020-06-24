@@ -7,7 +7,7 @@ import javax.enterprise.context.ApplicationScoped
 class Kafka {
 
     @Incoming("mygreffe")
-    fun consommer(chaine: String) {
-        println("  $chaine")
+    fun consommer(chaine: Parametre) {
+        println("chaine.cle : ${chaine.cle} - chaine.valeur : ${chaine.valeur}")
     }
 }
