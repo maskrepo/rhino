@@ -1,5 +1,7 @@
 package fr.convergence.proddoc
 
+import org.apache.kafka.streams.StreamsBuilder
+import org.apache.kafka.streams.kstream.Printed
 import javax.enterprise.context.ApplicationScoped
 import javax.ws.rs.GET
 import javax.ws.rs.Path
@@ -9,7 +11,9 @@ import javax.ws.rs.Path
 class Health {
 
     @GET
-    fun health(): String = "OK"
+    fun health(): String {
+        return "OK"
+    }
 
 }
 
