@@ -5,6 +5,7 @@ plugins {
     id ("io.quarkus") version "1.5.0.Final"
     id ("org.jetbrains.kotlin.plugin.allopen") version "1.3.72"
     id ("org.sonarqube") version "2.7"
+    id ("jacoco")
 }
 
 group = "fr.convergence.proddoc"
