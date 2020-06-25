@@ -4,6 +4,8 @@ import fr.convergence.proddoc.model.ParametreTest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
+private val TOPIC = "dbserver1.gtc.p_parametre"
+
 internal class MaskDeserializerTest {
 
     @Test
@@ -13,7 +15,7 @@ internal class MaskDeserializerTest {
             MaskDeserializerTest::class.java.getResource("/fr.convergence.proddoc.util.serdes/parametre_test.json")
                 .readText()
 
-        val testObject = maskDeserializer.deserialize("dbserver1.gtc.p_parametre", fileContent.toByteArray())!!
+        val testObject = maskDeserializer.deserialize(TOPIC, fileContent.toByteArray())!!
         Assertions.assertNotNull(testObject)
         Assertions.assertEquals(testObject::class.java, ParametreTest::class.java)
 
@@ -28,7 +30,7 @@ internal class MaskDeserializerTest {
 
         Assertions.assertThrows(
             IllegalArgumentException::class.java,
-            { maskDeserializer.deserialize("dbserver1.gtc.p_parametre", "{ \"bad\" : \"format\" }".toByteArray())!! })
+            { maskDeserializer.deserialize(TOPIC, "{ \"bad\" : \"format\" }".toByteArray())!! })
     }
 
     @Test
@@ -40,7 +42,7 @@ internal class MaskDeserializerTest {
 
         val assertThrows = Assertions.assertThrows(
             IllegalArgumentException::class.java,
-            { maskDeserializer.deserialize("dbserver1.gtc.p_parametre", fileContent.toByteArray())!! }
+            { maskDeserializer.deserialize(TOPIC, fileContent.toByteArray())!! }
         )
         Assertions.assertEquals("No class with annotation @MaskTable(\"table_de_test_introuvable\") found", assertThrows.message)
     }
