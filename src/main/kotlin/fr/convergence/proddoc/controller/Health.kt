@@ -1,4 +1,4 @@
-package fr.convergence.proddoc
+package fr.convergence.proddoc.controller
 
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.kstream.Printed
