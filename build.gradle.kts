@@ -29,7 +29,7 @@ dependencies {
     implementation("io.quarkus:quarkus-kafka-streams:$quarkusVersion")
     implementation("io.debezium:debezium-core:1.1.2.Final")
     implementation("org.reflections:reflections:0.9.12")
-
+    implementation("com.github.ben-manes.caffeine:caffeine:2.8.4")
 
     testImplementation("io.quarkus:quarkus-junit5")
 }
