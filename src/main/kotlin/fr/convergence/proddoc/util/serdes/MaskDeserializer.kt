@@ -13,24 +13,18 @@ class MaskDeserializer : Deserializer<Any?> {
     companion object {
         private val LOG: Logger = getLogger(MaskDeserializer::class.java)
 
-        private val deserializationPayloadProperties: HashMap<String, Any> =
-            hashMapOf("unknown.properties.ignored" to "true")
-        private val deserialisationClassProperties: HashMap<String, Any> =
-            hashMapOf("unknown.properties.ignored" to "true", "from.field" to "after")
-        private val classMaskTable =
-            Reflections("fr.convergence.proddoc.model").getTypesAnnotatedWith(MaskTable::class.java)
+        private val deserializationPayloadProperties: HashMap<String, Any> = hashMapOf("unknown.properties.ignored" to "true")
+        private val deserialisationClassProperties: HashMap<String, Any> = hashMapOf("unknown.properties.ignored" to "true", "from.field" to "after")
+        private val classMaskTable = Reflections("fr.convergence.proddoc.model").getTypesAnnotatedWith(MaskTable::class.java)
     }
 
     override fun deserialize(topic: String, data: ByteArray): Any? {
         val tableName = getTableName(topic, data)
-        tableName
-            ?: throw IllegalArgumentException("Table name not found in debezium meta-data (payload->source->table)")
+        tableName ?: throw IllegalArgumentException("Table name not found in debezium meta-data (payload->source->table)")
         LOG.debug("Table name in Meta-Data : $tableName")
 
-        val classDeserialization =
-            classMaskTable.filter { it.getAnnotation(MaskTable::class.java).value == tableName }.firstOrNull()
-        classDeserialization
-            ?: throw IllegalArgumentException("No class with annotation @MaskTable(\"$tableName\") found")
+        val classDeserialization = classMaskTable.filter { it.getAnnotation(MaskTable::class.java).value == tableName }.firstOrNull()
+        classDeserialization ?: throw IllegalArgumentException("No class with annotation @MaskTable(\"$tableName\") found")
         LOG.debug("Class to deserialize into : $classDeserialization")
 
         return fillObjectWithJson(topic, data, classDeserialization)

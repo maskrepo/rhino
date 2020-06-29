@@ -1,5 +1,8 @@
 package fr.convergence.proddoc.model
 
+import java.lang.System.*
+import kotlin.system.measureTimeMillis
+
 @MaskTable("p_parametre")
 class Parametre {
     var cle: String? = null
@@ -15,6 +18,7 @@ class Parametre {
     var indic_national: String? = null
     var condition: String? = null
     var nom_table_reference: String? = null
+    var timestamp = currentTimeMillis()
 
     override fun toString(): String {
         return "Parametre(${code_domaine}\\${code_sous_domaine}\\${cle}\\${chrono} => \"$valeur\")"
