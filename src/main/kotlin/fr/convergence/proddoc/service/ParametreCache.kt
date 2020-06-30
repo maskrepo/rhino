@@ -1,12 +1,13 @@
 package fr.convergence.proddoc.service
 
 import fr.convergence.proddoc.model.Parametre
+import java.util.concurrent.ConcurrentHashMap
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
 class ParametreCache {
 
-    private var map = mutableMapOf<String, Parametre>()
+    private var map = ConcurrentHashMap<String, Parametre>()
 
     fun addParameter(parametre: Parametre) = map.put(computeKey(parametre), parametre)
     private fun computeKey(parametre: Parametre): String = "${parametre.code_domaine}_${parametre.code_sous_domaine}_${parametre.cle}_${parametre.chrono}"
