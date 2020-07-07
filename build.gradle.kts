@@ -12,6 +12,7 @@ group = "fr.convergence.proddoc"
 version = "1.0-SNAPSHOT"
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -30,8 +31,11 @@ dependencies {
     implementation("io.debezium:debezium-core:1.1.2.Final")
     implementation("org.reflections:reflections:0.9.12")
 
-
     testImplementation("io.quarkus:quarkus-junit5")
+
+    implementation("fr.convergence.proddoc.libs:MaskCache:1.0.2-SNAPSHOT")
+    implementation("fr.convergence.proddoc.libs:MaskModel:1.0.0-SNAPSHOT")
+    implementation("fr.convergence.proddoc.libs:MaskSerdes:1.0-SNAPSHOT")
 }
 
 tasks {
@@ -41,7 +45,6 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
-
 }
 
 allOpen {

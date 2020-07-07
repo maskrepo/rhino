@@ -1,7 +1,7 @@
 package fr.convergence.proddoc.reactive
 
-import fr.convergence.proddoc.model.Parametre
-import fr.convergence.proddoc.service.ParametreCache
+import fr.convergence.proddoc.libs.service.ParametreCache
+import fr.convergence.proddoc.libs.model.Parametre
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory.getLogger
 import org.eclipse.microprofile.reactive.messaging.Incoming

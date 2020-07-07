@@ -1,4 +1,4 @@
-package fr.convergence.proddoc.model
+package fr.convergence.proddoc.libs.model
 
 @MaskTable("table_de_test")
 class ParametreTest {

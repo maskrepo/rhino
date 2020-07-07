@@ -1,6 +1,6 @@
 package fr.convergence.proddoc.util.serdes
 
-import fr.convergence.proddoc.model.ParametreTest
+import fr.convergence.proddoc.libs.model.ParametreTest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
