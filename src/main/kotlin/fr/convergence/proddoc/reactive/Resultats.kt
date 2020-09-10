@@ -4,7 +4,10 @@ import fr.convergence.proddoc.libs.service.ParametreCache
 import fr.convergence.proddoc.libs.model.Parametre
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory.getLogger
+import io.vertx.reactivex.core.Vertx
+import io.vertx.reactivex.ext.web.client.WebClient
 import org.eclipse.microprofile.reactive.messaging.Incoming
+import org.eclipse.microprofile.reactive.messaging.Outgoing
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
@@ -17,7 +20,22 @@ public class Resultats(@Inject var cache: ParametreCache) {
     }
 
     @Incoming("kbis_fini")
-    fun ecoute(lekbis :Int) {
-        LOG.info("Réception du résultat : $lekbis");
+    @Outgoing("kbis_status")
+    fun ecoute(urlKbis :String) : String{
+        LOG.info("Réception du résultat : $urlKbis")
+        val client = WebClient.create(Vertx.vertx())
+        //@TODO appliquer recommandation un client unique pour toute l'appli au lieu de l'instancier à chaque appel de la fonction
+        val pdf = client
+            .getAbs(urlKbis)
+            .rxSend()
+            .map { it.bodyAsBuffer().bytes }
+            .blockingGet()
+        return if (pdf.isNotEmpty()) {
+            LOG.info("KBIS_OK")
+            ("KBIS_OK")
+        } else {
+            LOG.info("KBIS_KO")
+            ("KBIS_KO")
+        }
     }
 }

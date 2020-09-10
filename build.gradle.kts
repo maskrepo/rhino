@@ -42,6 +42,7 @@ dependencies {
     implementation("io.quarkus:quarkus-kafka-streams:$quarkusVersion")
     implementation("io.debezium:debezium-core:1.1.2.Final")
     implementation("org.reflections:reflections:0.9.12")
+    implementation("io.vertx:vertx-web-client:3.9.2")
 
     testImplementation("io.quarkus:quarkus-junit5")
 
