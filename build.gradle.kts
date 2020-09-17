@@ -1,15 +1,17 @@
 val quarkusVersion: String = "1.5.0.Final"
 
 plugins {
-    kotlin("jvm") version "1.3.61"
+    kotlin("jvm") version "1.4.10"
+    id ("org.jetbrains.kotlin.plugin.allopen") version "1.4.10"
+
     id ("io.quarkus") version "1.5.0.Final"
-    id ("org.jetbrains.kotlin.plugin.allopen") version "1.3.72"
+
     id ("org.sonarqube") version "2.7"
     id ("jacoco")
 }
 
 group = "fr.convergence.proddoc"
-version = "1.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 // je mets ces 2 variables ici car je n'arrive pas à les mettre ailleurs
 // (dans settings.gradle.kts par exemple)
@@ -29,33 +31,30 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation(enforcedPlatform("io.quarkus:quarkus-bom:$quarkusVersion"))
+    implementation("io.quarkus:quarkus-kafka-client:$quarkusVersion")
+    implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka:$quarkusVersion")
+    implementation("io.quarkus:quarkus-smallrye-reactive-messaging:$quarkusVersion")
     implementation("io.quarkus:quarkus-resteasy-jackson")
     implementation("io.quarkus:quarkus-resteasy")
     implementation("io.quarkus:quarkus-rest-client")
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-config-yaml")
-    implementation("io.quarkus:quarkus-kafka-client:$quarkusVersion")
-    implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka:$quarkusVersion")
-    implementation("io.quarkus:quarkus-smallrye-reactive-messaging:$quarkusVersion")
-    implementation("io.quarkus:quarkus-kafka-streams:$quarkusVersion")
+
     implementation("io.debezium:debezium-core:1.1.2.Final")
-    implementation("org.reflections:reflections:0.9.12")
+
+    implementation("fr.convergence.proddoc.libs:MaskModel:1.1.1-SNAPSHOT")
+    implementation("fr.convergence.proddoc.util:MaskSerdes:1.0.1-SNAPSHOT")
 
     testImplementation("io.quarkus:quarkus-junit5")
-
-    implementation("fr.convergence.proddoc.libs:MaskCache:1.0.2-SNAPSHOT")
-    implementation("fr.convergence.proddoc.libs:MaskModel:1.0.0-SNAPSHOT")
-    implementation("fr.convergence.proddoc.util:MaskSerdes:1.0-SNAPSHOT")
 }
 
 tasks {
     compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "11"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "11"
     }
 }
 
