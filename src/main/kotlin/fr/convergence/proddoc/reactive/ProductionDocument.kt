@@ -2,20 +2,13 @@ package fr.convergence.proddoc.reactive
 
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
 import fr.convergence.proddoc.model.metier.KbisDemande
+import fr.convergence.proddoc.util.maskIOHandler
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory.getLogger
 import org.eclipse.microprofile.reactive.messaging.Incoming
 import org.eclipse.microprofile.reactive.messaging.Outgoing
 import javax.enterprise.context.ApplicationScoped
 import kotlin.random.Random
-
-inline fun <reified T> maskIOHandler(messageOrigine: MaskMessage, block: () -> T): MaskMessage {
-    try {
-        return MaskMessage.reponseOk(block.invoke(), messageOrigine)
-    } catch (ex: Exception) {
-        return MaskMessage.reponseKo<KbisDemande>(ex, messageOrigine)
-    }
-}
 
 @ApplicationScoped
 class ProductionDocument {
