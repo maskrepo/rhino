@@ -6,6 +6,7 @@ plugins {
 
     id ("io.quarkus") version "1.5.0.Final"
 
+    `maven-publish`
     id ("org.sonarqube") version "2.7"
     id ("jacoco")
 }
@@ -13,12 +14,11 @@ plugins {
 group = "fr.convergence.proddoc"
 version = "1.0.0-SNAPSHOT"
 
-// je mets ces 2 variables ici car je n'arrive pas à les mettre ailleurs
-// (dans settings.gradle.kts par exemple)
 val myMavenRepoUser = "myMavenRepo"
 val myMavenRepoPassword ="mask"
 
 repositories {
+    mavenLocal()
     maven {
         url = uri("https://mymavenrepo.com/repo/OYRB63ZK3HSrWJfc2RIB/")
         credentials {
@@ -26,11 +26,32 @@ repositories {
             password = myMavenRepoPassword
         }
     }
-    mavenLocal()
     mavenCentral()
 }
 
+publishing {
+    repositories {
+        maven {
+            url = uri("https://mymavenrepo.com/repo/ah37AFHxnt3Fln1mwTvi/")
+            credentials {
+                username = myMavenRepoUser
+                password = myMavenRepoPassword
+            }
+        }
+        mavenLocal()
+    }
+
+    publications {
+        create<MavenPublication>("mask-model") {
+            from(components["java"])
+        }
+    }
+}
+
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.4.10")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.0-RC")
+
     implementation(enforcedPlatform("io.quarkus:quarkus-bom:$quarkusVersion"))
     implementation("io.quarkus:quarkus-kafka-client:$quarkusVersion")
     implementation("io.quarkus:quarkus-smallrye-reactive-messaging-kafka:$quarkusVersion")
@@ -41,10 +62,8 @@ dependencies {
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-config-yaml")
 
-    implementation("io.debezium:debezium-core:1.1.2.Final")
-
-    implementation("fr.convergence.proddoc.libs:MaskModel:1.1.1-SNAPSHOT")
-    implementation("fr.convergence.proddoc.util:MaskSerdes:1.0.1-SNAPSHOT")
+    implementation("fr.convergence.proddoc.lib:mask-model:1.0.0-SNAPSHOT")
+    implementation("fr.convergence.proddoc.lib:mask-cache:1.0.1-SNAPSHOT")
 
     testImplementation("io.quarkus:quarkus-junit5")
 }
