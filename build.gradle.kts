@@ -62,11 +62,14 @@ dependencies {
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-config-yaml")
 
-    implementation("fr.convergence.proddoc.lib:mask-model:1.0.0-SNAPSHOT")
+    implementation("fr.convergence.proddoc.lib:mask-model:1.0.1-SNAPSHOT")
     implementation("fr.convergence.proddoc.lib:mask-util:1.0.0-SNAPSHOT")
     implementation("fr.convergence.proddoc.lib:mask-cache:1.0.1-SNAPSHOT")
+    implementation("junit:junit:4.12")
 
-    testImplementation("io.quarkus:quarkus-junit5")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.4.2")
+    testImplementation("org.assertj:assertj-core:3.12.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.4.2")
 }
 
 tasks {
@@ -76,6 +79,10 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "11"
     }
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 allOpen {
