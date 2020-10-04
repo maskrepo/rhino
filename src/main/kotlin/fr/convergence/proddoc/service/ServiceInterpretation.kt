@@ -20,7 +20,7 @@ import javax.inject.Inject
 class ServiceInterpretation {
 
     @Inject
-    lateinit var serviceDeMiseEnCacheDesLots: ServiceDeMiseEnCacheDesLots
+    lateinit var serviceAccesAuCacheDesLots: ServiceAccesAuCacheDesLots
 
     companion object {
         private val LOG: Logger = LoggerFactory.getLogger(ServiceInterpretation::class.java)
@@ -28,7 +28,7 @@ class ServiceInterpretation {
 
     fun interpreterLot(clefAccesAuxLots: ClefAccesAuxLots) {
 
-        val maskLot = serviceDeMiseEnCacheDesLots.getMaskLotDepuisMapQuiContientLesLots(clefAccesAuxLots)
+        val maskLot = serviceAccesAuCacheDesLots.getMaskLotDepuisMapQuiContientLesLots(clefAccesAuxLots)
         requireNotNull(maskLot)
         requireNotNull(maskLot.produits)
 

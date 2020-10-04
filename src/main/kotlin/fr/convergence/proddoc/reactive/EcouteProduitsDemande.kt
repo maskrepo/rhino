@@ -3,7 +3,7 @@ package fr.convergence.proddoc.reactive
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
 import fr.convergence.proddoc.model.metier.ClefAccesAuxLots
 import fr.convergence.proddoc.model.metier.Produit
-import fr.convergence.proddoc.service.ServiceDeMiseEnCacheDesLots
+import fr.convergence.proddoc.service.ServiceAccesAuCacheDesLots
 import fr.convergence.proddoc.service.ServiceInterpretation
 import fr.convergence.proddoc.util.maskIOHandler
 import io.vertx.core.logging.Logger
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class EcouteProduitsDemande {
 
     @Inject
-    lateinit var serviceDeMiseEnCacheDesLots: ServiceDeMiseEnCacheDesLots
+    lateinit var serviceAccesAuCacheDesLots: ServiceAccesAuCacheDesLots
 
     @Inject
     lateinit var serviceInterpretation: ServiceInterpretation
@@ -40,7 +40,7 @@ class EcouteProduitsDemande {
         when (produit.typeEvenement) {
             "AJOUT PRODUIT" -> {
                 EcouteProduitsDemande.LOG.info("Reception d'un evenement AJOUT_PRODUIT: Mise en mémoire dans le lot associé : ${clefAccesAuxLots}")
-                serviceDeMiseEnCacheDesLots.ajoutProduitsDansLeLot(clefAccesAuxLots,produit)
+                serviceAccesAuCacheDesLots.ajoutProduitsDansLeLot(clefAccesAuxLots,produit)
             };
             "INTERPRETATION LOT" -> {
                 EcouteProduitsDemande.LOG.info("Reception d'un evenement INTERPRETATION_LOT: Déclenche l'interprétation du lot : ${clefAccesAuxLots}")

@@ -9,12 +9,12 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class ServiceDeMiseEnCacheDesLots {
+class ServiceAccesAuCacheDesLots {
 
     private var mapQuiContientLesLots = ConcurrentHashMap<ClefAccesAuxLots, MaskLot>()
 
     companion object {
-        private val LOG: Logger = LoggerFactory.getLogger(ServiceDeMiseEnCacheDesLots::class.java)
+        private val LOG: Logger = LoggerFactory.getLogger(ServiceAccesAuCacheDesLots::class.java)
     }
 
     fun ajoutOuMiseAJourLots(maskMessage: MaskMessage) {
