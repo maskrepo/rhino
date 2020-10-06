@@ -62,8 +62,8 @@ dependencies {
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-config-yaml")
 
-    implementation("fr.convergence.proddoc.lib:mask-model:1.0.1-SNAPSHOT")
-    implementation("fr.convergence.proddoc.lib:mask-util:1.0.0-SNAPSHOT")
+    implementation("fr.convergence.proddoc.lib:mask-model:1.0.2-SNAPSHOT")
+    implementation("fr.convergence.proddoc.lib:mask-util:1.0.2-SNAPSHOT")
     implementation("fr.convergence.proddoc.lib:mask-cache:1.0.1-SNAPSHOT")
     implementation("junit:junit:4.12")
 

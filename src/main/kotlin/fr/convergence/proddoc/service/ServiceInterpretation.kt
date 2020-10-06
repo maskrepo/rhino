@@ -1,10 +1,10 @@
 package fr.convergence.proddoc.service
 
+import fr.convergence.proddoc.model.ClefAccesAuxLots
+import fr.convergence.proddoc.model.MaskProduit
 import fr.convergence.proddoc.model.lib.obj.MaskEntete
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
-import fr.convergence.proddoc.model.metier.ClefAccesAuxLots
 import fr.convergence.proddoc.model.metier.KbisDemande
-import fr.convergence.proddoc.model.metier.MaskProduit
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import kotlinx.serialization.json.Json
@@ -59,8 +59,21 @@ class ServiceInterpretation {
         val numeroGestion = maskProduit.evenement.mapObjetMetier!!.getValue("REGISTRE")
             ?: throw IllegalStateException("tentative de déclancher une actionDemandeDeKbis avec parametre non renseigne")
         val avecApostille = maskProduit.evenement.pourApostille ?: false
-        val kbisDemande = KbisDemande(numeroGestion = numeroGestion, avecApostille = avecApostille, avecSceau = false, avecSignature = false)
-        val maskEntete = MaskEntete(idUnique = UUID.randomUUID().toString(),idLot = clefAccesAuxLots.idLot, idEmetteur = clefAccesAuxLots.idEmetteur, idGreffe = clefAccesAuxLots.idGreffe,typeDemande = "DEMANDE_KBIS",dateHeureDemande = LocalDateTime.now() )
+        val kbisDemande = KbisDemande(
+            numeroGestion = numeroGestion,
+            avecApostille = avecApostille,
+            avecSceau = false,
+            avecSignature = false
+        )
+        val maskEntete = MaskEntete(
+            idUnique = UUID.randomUUID().toString(),
+            idLot = clefAccesAuxLots.idLot,
+            idEmetteur = clefAccesAuxLots.idEmetteur,
+            idGreffe = clefAccesAuxLots.idGreffe,
+            typeDemande = "DEMANDE_KBIS",
+            dateHeureDemande = LocalDateTime.now(),
+            idReference = UUID.randomUUID().toString()
+        )
         val maskMessage = MaskMessage(maskEntete, Json.encodeToJsonElement(kbisDemande), null)
 
         actionDemandeKbisEmitter?.send(maskMessage)

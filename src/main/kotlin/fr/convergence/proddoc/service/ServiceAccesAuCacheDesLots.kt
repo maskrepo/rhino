@@ -1,5 +1,6 @@
 package fr.convergence.proddoc.service
 
+import fr.convergence.proddoc.model.*
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
 import fr.convergence.proddoc.model.metier.*
 import io.vertx.core.logging.Logger

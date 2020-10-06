@@ -1,7 +1,7 @@
 package fr.convergence.proddoc.reactive
 
+import fr.convergence.proddoc.model.ClefAccesAuxLots
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
-import fr.convergence.proddoc.model.metier.ClefAccesAuxLots
 import fr.convergence.proddoc.model.metier.Produit
 import fr.convergence.proddoc.service.ServiceAccesAuCacheDesLots
 import fr.convergence.proddoc.service.ServiceInterpretation
@@ -35,12 +35,13 @@ class EcouteProduitsDemande {
         val produit = question.recupererObjetMetier<Produit>()
         controleDonneesDeObjetMetierProduit(produit)
 
-        val clefAccesAuxLots = ClefAccesAuxLots(question.entete.idEmetteur, question.entete.idGreffe, question.entete.idLot!!)
+        val clefAccesAuxLots =
+            ClefAccesAuxLots(question.entete.idEmetteur, question.entete.idGreffe, question.entete.idLot!!)
 
         when (produit.typeEvenement) {
             "AJOUT PRODUIT" -> {
                 EcouteProduitsDemande.LOG.info("Reception d'un evenement AJOUT_PRODUIT: Mise en mémoire dans le lot associé : ${clefAccesAuxLots}")
-                serviceAccesAuCacheDesLots.ajoutProduitsDansLeLot(clefAccesAuxLots,produit)
+                serviceAccesAuCacheDesLots.ajoutProduitsDansLeLot(clefAccesAuxLots, produit)
             };
             "INTERPRETATION LOT" -> {
                 EcouteProduitsDemande.LOG.info("Reception d'un evenement INTERPRETATION_LOT: Déclenche l'interprétation du lot : ${clefAccesAuxLots}")
