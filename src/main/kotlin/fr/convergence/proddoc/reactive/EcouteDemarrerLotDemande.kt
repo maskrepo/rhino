@@ -3,7 +3,6 @@ package fr.convergence.proddoc.reactive
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
 import fr.convergence.proddoc.model.metier.Lot
 import fr.convergence.proddoc.service.ServiceAccesAuCacheDesLots
-import fr.convergence.proddoc.util.maskIOHandler
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import org.eclipse.microprofile.reactive.messaging.Incoming
@@ -23,7 +22,7 @@ class EcouteDemarrerLotDemande {
 
     @Incoming("demarrer_lot_demande")
     @Outgoing("demarrer_lot_resultat")
-    fun demarrerLot(question: MaskMessage): MaskMessage = maskIOHandler(question) {
+    fun demarrerLot(question: MaskMessage): MaskMessage {
         controleDesDonneesDeEntete(question)
         controleDesDonneesDeObjetMetierLot(question.recupererObjetMetier<Lot>(), question)
         EcouteDemarrerLotDemande.LOG.info("Réception d'une demande de type : ${question.entete.typeDemande} - indentifiant lot : ${question.entete.idLot} - details : ${question}")
@@ -31,7 +30,7 @@ class EcouteDemarrerLotDemande {
         EcouteDemarrerLotDemande.LOG.info("Mise en mémoire de la demande de type : ${question.entete.typeDemande} - Emetteur : ${question.entete.idEmetteur} - Greffe : ${question.entete.idGreffe} - Lot : ${question.entete.idLot}")
         serviceAccesAuCacheDesLots.ajoutOuMiseAJourLots(question)
         serviceAccesAuCacheDesLots.afficheMapQuiContientLesLots()
-        question
+        return question
     }
 
     private fun controleDesDonneesDeObjetMetierLot(

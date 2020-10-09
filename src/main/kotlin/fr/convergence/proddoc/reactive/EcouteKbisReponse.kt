@@ -6,11 +6,13 @@ import fr.convergence.proddoc.model.ActionEtat
 import fr.convergence.proddoc.model.ClefAccesAuxLots
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
 import fr.convergence.proddoc.model.metier.KbisDemande
+import fr.convergence.proddoc.model.metier.KbisRetour
 import fr.convergence.proddoc.model.metier.Lot
 import fr.convergence.proddoc.service.ServiceAccesAuCacheDesLots
-import fr.convergence.proddoc.util.maskIOHandler
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
+import org.eclipse.microprofile.reactive.messaging.Channel
+import org.eclipse.microprofile.reactive.messaging.Emitter
 import org.eclipse.microprofile.reactive.messaging.Incoming
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
@@ -26,8 +28,9 @@ class EcouteKbisReponse {
     }
 
     @Incoming("kbis_reponse")
-    fun receptionKbisReponse(question: MaskMessage): MaskMessage = maskIOHandler(question) {
+    fun receptionKbisReponse(question: MaskMessage) {
         val maskLot = serviceAccesAuCacheDesLots.getMaskLotDepuisMapQuiContientLesLots(HelperRhino.obtenirClefAccesLot(question))
+        val kbisRetour = question.recupererObjetMetier<KbisRetour>()
         when {
             question.isReponse() && question.reponse!!.estReponseOk  == true -> {
                 //Une reponse ok implique que l on doit mettre a jour l etat de l'action dans la liste des actions
@@ -55,6 +58,7 @@ class EcouteKbisReponse {
             LOG.info("Déclenchement prevenir myGreffe produit OK")
             //TODO prevenir myGReffe produit genere
         }
+
         if ( listeActionsNonRealisees.size == 0 && listeActionsEnEchec.size != 0) {
             LOG.info("L'ensemble des actions pour le produit ${question.entete} n'ont pas été réalisées avec succés")
             LOG.info("Ne pas déclencher restitution")
@@ -66,6 +70,17 @@ class EcouteKbisReponse {
             LOG.info("L'ensemble des actions pour le produit ${question.entete} n'ont pas été réalisées")
             LOG.info("Aucun déclenchement à faire")
         }
+
+        //TODO demande de surcharge à GATOR
+        ///Si Surcharge
+            //faireDemandeSurchargeDocument()
+        //Sinon impression
+         //   faireDemandeImpression()
+
+
     }
+
+
+
 
 }

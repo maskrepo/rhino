@@ -42,8 +42,10 @@ class ServiceAccesAuCacheDesLots {
 
     fun ajoutProduitsDansLeLot(clefAccesAuxLots: ClefAccesAuxLots, produit: Produit) {
         val maskLot = getMaskLotDepuisMapQuiContientLesLots(clefAccesAuxLots)
-        if (maskLot.peutOnDemarrerInterpretation == true) throw java.lang.IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que l'interpretation du lot est demarrée")
-        maskLot.produits!!.add(obtenirMaskProduitDepuisProduit(produit))
+        if (maskLot.peutOnDemarrerInterpretation == true) {
+            throw IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que l'interpretation du lot ${clefAccesAuxLots} est demarrée")
+        }
+        maskLot.produits.add(obtenirMaskProduitDepuisProduitMyGreffe(produit))
 
     }
 
@@ -70,7 +72,7 @@ class ServiceAccesAuCacheDesLots {
         )
     }
 
-    fun obtenirMaskProduitDepuisProduit(produit: Produit): MaskProduit {
+    fun obtenirMaskProduitDepuisProduitMyGreffe(produit: Produit): MaskProduit {
         return MaskProduit(
             produit.typeEvenement,
             MaskEvenement(

@@ -17,10 +17,7 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
 @ApplicationScoped
-class ServiceInterpretation {
-
-    @Inject
-    lateinit var serviceAccesAuCacheDesLots: ServiceAccesAuCacheDesLots
+class ServiceInterpretation(@Inject var serviceAccesAuCacheDesLots: ServiceAccesAuCacheDesLots) {
 
     companion object {
         private val LOG: Logger = LoggerFactory.getLogger(ServiceInterpretation::class.java)
@@ -35,7 +32,7 @@ class ServiceInterpretation {
         //TODO voir comment controler que l'utilisateur n'envoie pas N fois les même demandes
         if (maskLot.peutOnDemarrerInterpretation == true) throw IllegalStateException("Reception d'une demande redondante d'interpretation de Lot")
         maskLot.peutOnDemarrerInterpretation = true
-        for (maskProduit in maskLot.produits!!) {
+        for (maskProduit in maskLot.produits) {
             when {
                 //TODO ajouter VISU_KBIS et voir le cas ou on à null dans la listeIndicateur
                 maskProduit.evenement.codeProduit == "RCS_KBIS" -> {
@@ -57,7 +54,6 @@ class ServiceInterpretation {
     fun actionDemandeKbis(clefAccesAuxLots: ClefAccesAuxLots, maskProduit: MaskProduit) {
         ServiceInterpretation.LOG.info("actionDemandeKbis : ${clefAccesAuxLots} ")
         val numeroGestion = maskProduit.evenement.mapObjetMetier!!.getValue("REGISTRE")
-            ?: throw IllegalStateException("tentative de déclancher une actionDemandeDeKbis avec parametre non renseigne")
         val avecApostille = maskProduit.evenement.pourApostille ?: false
         val kbisDemande = KbisDemande(
             numeroGestion = numeroGestion,

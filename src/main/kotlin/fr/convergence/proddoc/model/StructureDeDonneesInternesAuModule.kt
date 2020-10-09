@@ -20,8 +20,8 @@ data class MaskLot (
     @Serializable(with = LocalDateTimeSerializer::class)
     val dateDeReceptionDuLot: LocalDateTime,
     val codeUtilisateur: String,
-    val produits : MutableList<MaskProduit>?,
-    val actions : MutableList<MaskAction>?,
+    val produits : MutableList<MaskProduit>,
+    val actions : MutableList<MaskAction>,
     var peutOnDemarrerInterpretation : Boolean = false
 )
 
@@ -58,7 +58,7 @@ data class MaskEvenement (
 data class MaskAction (
     val maskMessage: MaskMessage,
     val idEvenementDuquelDependCetteAction : String, // On doit le retrouver dans la liste des MaskActions de MaskLot
-    val infosTopicSurLequelOnPosteLeMessage : String,
+    //val infosTopicSurLequelOnPosteLeMessage : String,
     var actionEtat : ActionEtat // Enum
 )
 

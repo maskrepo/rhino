@@ -9,8 +9,6 @@ import javax.ws.rs.Path
 class Health {
 
     @GET
-    fun health(): String {
-        return "Yo, DimBullS*** UP"
-    }
+    fun health(): String = "Ok, Rhino"
 
 }
