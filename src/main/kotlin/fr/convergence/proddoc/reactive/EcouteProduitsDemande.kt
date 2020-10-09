@@ -1,46 +1,41 @@
 package fr.convergence.proddoc.reactive
 
+import fr.convergence.proddoc.model.ClefAccesAuxLots
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
-import fr.convergence.proddoc.model.metier.ClefAccesAuxLots
 import fr.convergence.proddoc.model.metier.Produit
-import fr.convergence.proddoc.service.ServiceDeMiseEnCacheDesLots
+import fr.convergence.proddoc.service.ServiceAccesAuCacheDesLots
 import fr.convergence.proddoc.service.ServiceInterpretation
-import fr.convergence.proddoc.util.maskIOHandler
-import io.vertx.core.logging.Logger
-import io.vertx.core.logging.LoggerFactory
+import io.vertx.core.logging.LoggerFactory.*
 import org.eclipse.microprofile.reactive.messaging.Incoming
 import org.eclipse.microprofile.reactive.messaging.Outgoing
 import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
 @ApplicationScoped
-class EcouteProduitsDemande {
-
-    @Inject
-    lateinit var serviceDeMiseEnCacheDesLots: ServiceDeMiseEnCacheDesLots
-
-    @Inject
-    lateinit var serviceInterpretation: ServiceInterpretation
+class EcouteProduitsDemande(
+    @Inject var serviceAccesAuCacheDesLots: ServiceAccesAuCacheDesLots,
+    @Inject var serviceInterpretation: ServiceInterpretation) {
 
     companion object {
-        private val LOG: Logger = LoggerFactory.getLogger(EcouteProduitsDemande::class.java)
+        private val LOG = getLogger(EcouteProduitsDemande::class.java)
     }
 
     @Incoming("produits_demande")
     @Outgoing("produits_reponse")
-    fun receptionProduits(question: MaskMessage): MaskMessage = maskIOHandler(question) {
+    fun receptionProduits(question: MaskMessage): MaskMessage {
 
-        EcouteProduitsDemande.LOG.info("Réception d'un produit : $question")
+        LOG.info("Réception d'un produit : $question")
         controleDesDonneesDeEntete(question)
         val produit = question.recupererObjetMetier<Produit>()
         controleDonneesDeObjetMetierProduit(produit)
 
-        val clefAccesAuxLots = ClefAccesAuxLots(question.entete.idEmetteur, question.entete.idGreffe, question.entete.idLot!!)
+        val clefAccesAuxLots =
+            ClefAccesAuxLots(question.entete.idEmetteur, question.entete.idGreffe, question.entete.idLot!!)
 
         when (produit.typeEvenement) {
             "AJOUT PRODUIT" -> {
                 EcouteProduitsDemande.LOG.info("Reception d'un evenement AJOUT_PRODUIT: Mise en mémoire dans le lot associé : ${clefAccesAuxLots}")
-                serviceDeMiseEnCacheDesLots.ajoutProduitsDansLeLot(clefAccesAuxLots,produit)
+                serviceAccesAuCacheDesLots.ajoutProduitsDansLeLot(clefAccesAuxLots, produit)
             };
             "INTERPRETATION LOT" -> {
                 EcouteProduitsDemande.LOG.info("Reception d'un evenement INTERPRETATION_LOT: Déclenche l'interprétation du lot : ${clefAccesAuxLots}")
@@ -48,6 +43,8 @@ class EcouteProduitsDemande {
             };
             else -> throw IllegalStateException("reception d'un produit contenant un typeEvenement inconnu")
         }
+
+        return MaskMessage.reponseOk("Ok", question, question.entete.idReference)
     }
 
     private fun controleDesDonneesDeEntete(question: MaskMessage) {

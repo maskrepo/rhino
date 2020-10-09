@@ -1,10 +1,10 @@
 package fr.convergence.proddoc.service
 
+import fr.convergence.proddoc.model.ClefAccesAuxLots
+import fr.convergence.proddoc.model.MaskProduit
 import fr.convergence.proddoc.model.lib.obj.MaskEntete
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
-import fr.convergence.proddoc.model.metier.ClefAccesAuxLots
 import fr.convergence.proddoc.model.metier.KbisDemande
-import fr.convergence.proddoc.model.metier.MaskProduit
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import kotlinx.serialization.json.Json
@@ -17,10 +17,7 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
 @ApplicationScoped
-class ServiceInterpretation {
-
-    @Inject
-    lateinit var serviceDeMiseEnCacheDesLots: ServiceDeMiseEnCacheDesLots
+class ServiceInterpretation(@Inject var serviceAccesAuCacheDesLots: ServiceAccesAuCacheDesLots) {
 
     companion object {
         private val LOG: Logger = LoggerFactory.getLogger(ServiceInterpretation::class.java)
@@ -28,14 +25,14 @@ class ServiceInterpretation {
 
     fun interpreterLot(clefAccesAuxLots: ClefAccesAuxLots) {
 
-        val maskLot = serviceDeMiseEnCacheDesLots.getMaskLotDepuisMapQuiContientLesLots(clefAccesAuxLots)
+        val maskLot = serviceAccesAuCacheDesLots.getMaskLotDepuisMapQuiContientLesLots(clefAccesAuxLots)
         requireNotNull(maskLot)
         requireNotNull(maskLot.produits)
 
         //TODO voir comment controler que l'utilisateur n'envoie pas N fois les même demandes
         if (maskLot.peutOnDemarrerInterpretation == true) throw IllegalStateException("Reception d'une demande redondante d'interpretation de Lot")
         maskLot.peutOnDemarrerInterpretation = true
-        for (maskProduit in maskLot.produits!!) {
+        for (maskProduit in maskLot.produits) {
             when {
                 //TODO ajouter VISU_KBIS et voir le cas ou on à null dans la listeIndicateur
                 maskProduit.evenement.codeProduit == "RCS_KBIS" -> {
@@ -57,10 +54,22 @@ class ServiceInterpretation {
     fun actionDemandeKbis(clefAccesAuxLots: ClefAccesAuxLots, maskProduit: MaskProduit) {
         ServiceInterpretation.LOG.info("actionDemandeKbis : ${clefAccesAuxLots} ")
         val numeroGestion = maskProduit.evenement.mapObjetMetier!!.getValue("REGISTRE")
-            ?: throw IllegalStateException("tentative de déclancher une actionDemandeDeKbis avec parametre non renseigne")
         val avecApostille = maskProduit.evenement.pourApostille ?: false
-        val kbisDemande = KbisDemande(numeroGestion = numeroGestion, avecApostille = avecApostille, avecSceau = false, avecSignature = false)
-        val maskEntete = MaskEntete(idUnique = UUID.randomUUID().toString(),idLot = clefAccesAuxLots.idLot, idEmetteur = clefAccesAuxLots.idEmetteur, idGreffe = clefAccesAuxLots.idGreffe,typeDemande = "DEMANDE_KBIS",dateHeureDemande = LocalDateTime.now() )
+        val kbisDemande = KbisDemande(
+            numeroGestion = numeroGestion,
+            avecApostille = avecApostille,
+            avecSceau = false,
+            avecSignature = false
+        )
+        val maskEntete = MaskEntete(
+            idUnique = UUID.randomUUID().toString(),
+            idLot = clefAccesAuxLots.idLot,
+            idEmetteur = clefAccesAuxLots.idEmetteur,
+            idGreffe = clefAccesAuxLots.idGreffe,
+            typeDemande = "DEMANDE_KBIS",
+            dateHeureDemande = LocalDateTime.now(),
+            idReference = UUID.randomUUID().toString()
+        )
         val maskMessage = MaskMessage(maskEntete, Json.encodeToJsonElement(kbisDemande), null)
 
         actionDemandeKbisEmitter?.send(maskMessage)

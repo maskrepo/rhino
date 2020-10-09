@@ -1,5 +1,6 @@
 package fr.convergence.proddoc.service
 
+import fr.convergence.proddoc.model.*
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
 import fr.convergence.proddoc.model.metier.*
 import io.vertx.core.logging.Logger
@@ -9,12 +10,12 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-class ServiceDeMiseEnCacheDesLots {
+class ServiceAccesAuCacheDesLots {
 
     private var mapQuiContientLesLots = ConcurrentHashMap<ClefAccesAuxLots, MaskLot>()
 
     companion object {
-        private val LOG: Logger = LoggerFactory.getLogger(ServiceDeMiseEnCacheDesLots::class.java)
+        private val LOG: Logger = LoggerFactory.getLogger(ServiceAccesAuCacheDesLots::class.java)
     }
 
     fun ajoutOuMiseAJourLots(maskMessage: MaskMessage) {
@@ -41,8 +42,10 @@ class ServiceDeMiseEnCacheDesLots {
 
     fun ajoutProduitsDansLeLot(clefAccesAuxLots: ClefAccesAuxLots, produit: Produit) {
         val maskLot = getMaskLotDepuisMapQuiContientLesLots(clefAccesAuxLots)
-        if (maskLot.peutOnDemarrerInterpretation == true) throw java.lang.IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que l'interpretation du lot est demarrée")
-        maskLot.produits!!.add(obtenirMaskProduitDepuisProduit(produit))
+        if (maskLot.peutOnDemarrerInterpretation == true) {
+            throw IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que l'interpretation du lot ${clefAccesAuxLots} est demarrée")
+        }
+        maskLot.produits.add(obtenirMaskProduitDepuisProduitMyGreffe(produit))
 
     }
 
@@ -69,7 +72,7 @@ class ServiceDeMiseEnCacheDesLots {
         )
     }
 
-    fun obtenirMaskProduitDepuisProduit(produit: Produit): MaskProduit {
+    fun obtenirMaskProduitDepuisProduitMyGreffe(produit: Produit): MaskProduit {
         return MaskProduit(
             produit.typeEvenement,
             MaskEvenement(
