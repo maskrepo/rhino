@@ -54,7 +54,7 @@ class EcouteKbisReponse(@Inject var serviceAccesAuCacheDesLots: ServiceAccesAuCa
         if ( listeActionsNonRealisees.size == 0 && listeActionsEnEchec.size == 0) {
             LOG.info("L'ensemble des actions pour le produit ${question.entete} ont été réalisées avec succés")
             LOG.info("Déclenchement restitution")
-            ImpressionDemande(kbisRetour.messageRetour,ClefAccesAuxLots(question.entete.idEmetteur,question.entete.idGreffe,question.entete.idLot!!))
+            impressionDemande(kbisRetour.messageRetour,ClefAccesAuxLots(question.entete.idEmetteur,question.entete.idGreffe,question.entete.idLot!!))
             LOG.info("Déclenchement prevenir myGreffe produit OK")
         }
 
