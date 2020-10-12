@@ -74,7 +74,7 @@ class EcouteKbisReponse(@Inject var serviceAccesAuCacheDesLots: ServiceAccesAuCa
     @field: Channel("impression_demande")
     val actionImpressionDemandeEmitter: Emitter<MaskMessage>? = null
 
-    fun ImpressionDemande(urlFichierAImprimer : String, clefAccesAuxLots : ClefAccesAuxLots){
+    fun impressionDemande(urlFichierAImprimer : String, clefAccesAuxLots : ClefAccesAuxLots){
 
         LOG.info("actionImpressionDemande : ${clefAccesAuxLots} ")
         val impressionDemande = DemandeImpression(IDsortieDocument = "" ,urlFichierAImprimer = urlFichierAImprimer ,rectoVerso = true,nomImprimante = "",nomBacEntree = "",nbExemplaires = 1 )
