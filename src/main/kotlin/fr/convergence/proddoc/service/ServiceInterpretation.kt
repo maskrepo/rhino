@@ -1,6 +1,8 @@
 package fr.convergence.proddoc.service
 
+import fr.convergence.proddoc.model.ActionEtat
 import fr.convergence.proddoc.model.ClefAccesAuxLots
+import fr.convergence.proddoc.model.MaskAction
 import fr.convergence.proddoc.model.MaskProduit
 import fr.convergence.proddoc.model.lib.obj.MaskEntete
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
@@ -37,7 +39,10 @@ class ServiceInterpretation(@Inject var serviceAccesAuCacheDesLots: ServiceAcces
                 //TODO ajouter VISU_KBIS et voir le cas ou on à null dans la listeIndicateur
                 maskProduit.evenement.codeProduit == "RCS_KBIS" -> {
                     // TODO pour chaque destinataire
-                    actionDemandeKbis(clefAccesAuxLots, maskProduit)
+                    //ajouter action dans le  lot
+                    actionDemandeKbis(clefAccesAuxLots, maskProduit , maskLot.actions)
+
+
                 };
                 else -> throw IllegalStateException("L'evenement n'a pas pu être interpreté correctement")
             }
@@ -51,7 +56,7 @@ class ServiceInterpretation(@Inject var serviceAccesAuCacheDesLots: ServiceAcces
     @field: Channel("kbis_demande")
     val actionDemandeKbisEmitter: Emitter<MaskMessage>? = null
 
-    fun actionDemandeKbis(clefAccesAuxLots: ClefAccesAuxLots, maskProduit: MaskProduit) {
+    fun actionDemandeKbis(clefAccesAuxLots: ClefAccesAuxLots, maskProduit: MaskProduit , actions : MutableList<MaskAction>) {
         ServiceInterpretation.LOG.info("actionDemandeKbis : ${clefAccesAuxLots} ")
         val numeroGestion = maskProduit.evenement.mapObjetMetier!!.getValue("REGISTRE")
         val avecApostille = maskProduit.evenement.pourApostille ?: false
@@ -71,6 +76,10 @@ class ServiceInterpretation(@Inject var serviceAccesAuCacheDesLots: ServiceAcces
             idReference = UUID.randomUUID().toString()
         )
         val maskMessage = MaskMessage(maskEntete, Json.encodeToJsonElement(kbisDemande), null)
+
+        // on ajoute l'action dans la liste des action du lot
+        // TODO modifier maskAction mettre directement la reference au MaskProduit
+        actions.add(MaskAction(maskMessage,maskProduit.evenement.idEvenement,ActionEtat.ACTION_NON_REALISEE))
 
         actionDemandeKbisEmitter?.send(maskMessage)
 
