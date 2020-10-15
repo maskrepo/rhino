@@ -2,7 +2,8 @@ package fr.convergence.proddoc.service
 
 import fr.convergence.proddoc.model.*
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
-import fr.convergence.proddoc.model.metier.*
+import fr.convergence.proddoc.model.metier.Lot
+import fr.convergence.proddoc.model.metier.Produit
 import io.vertx.core.logging.Logger
 import io.vertx.core.logging.LoggerFactory
 import java.util.*
@@ -19,39 +20,38 @@ class ServiceAccesAuCacheDesLots {
     }
 
     fun ajoutOuMiseAJourLots(maskMessage: MaskMessage) {
-        if (mapQuiContientLesLots.containsKey(
-                ClefAccesAuxLots(
-                    maskMessage.entete.idEmetteur,
-                    maskMessage.entete.idGreffe,
-                    maskMessage.entete.idLot!!
-                )
-            )
-        ) {
-            throw IllegalStateException("Le lot a déjà été reçu par rhino ")
-        } else {
-            mapQuiContientLesLots.put(
-                ClefAccesAuxLots(
-                    maskMessage.entete.idEmetteur,
-                    maskMessage.entete.idGreffe,
-                    maskMessage.entete.idLot!!
-                ), obtenirMaskLotDepuisMaskMessage(maskMessage)
-            )
+        val clefAcces =
+            ClefAccesAuxLots(maskMessage.entete.idEmetteur, maskMessage.entete.idGreffe, maskMessage.entete.idLot!!)
+
+        val maskLotRecu = obtenirMaskLotDepuisMaskMessage(maskMessage)
+
+        val ValeurExisteDeja = mapQuiContientLesLots.putIfAbsent(clefAcces, maskLotRecu)
+
+        if (ValeurExisteDeja != null) {
+            throw IllegalStateException("Le lot a déjà été reçu par rhino : valeur existante ${maskLotRecu} - valeur reçue ${ValeurExisteDeja} ")
         }
     }
 
-
-    fun ajoutProduitsDansLeLot(clefAccesAuxLots: ClefAccesAuxLots, produit: Produit) {
+    fun ajoutProduitsDansLeLot(clefAccesAuxLots: ClefAccesAuxLots, produit: Produit) : MaskProduit {
         val maskLot = getMaskLotDepuisMapQuiContientLesLots(clefAccesAuxLots)
-        if (maskLot.peutOnDemarrerInterpretation == true) {
-            throw IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que l'interpretation du lot ${clefAccesAuxLots} est demarrée")
+        if (maskLot.peutOnDemarrerInterpretation == true ) {
+            throw IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que l'interpretation du lot ${maskLot} est demarrée")
         }
-        maskLot.produits.add(obtenirMaskProduitDepuisProduitMyGreffe(produit))
-
+        if (maskLot.peutOnDemarrerRestitution == true ) {
+            throw IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que la restitution du lot ${maskLot} est demarrée")
+        }
+        if (maskLot.peutOnDemarrerGeneration == true ) {
+            throw IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que la generation du lot ${maskLot} est demarrée")
+        }
+        val maskProduit = obtenirMaskProduitDepuisProduitMyGreffe(produit)
+        maskLot.produits.add(maskProduit)
+        return maskProduit
     }
 
     fun getMaskLotDepuisMapQuiContientLesLots(clefAccesAuxLots: ClefAccesAuxLots): MaskLot {
         LOG.info("recherche du Lot ${clefAccesAuxLots} en memoire")
-        val getMaskLotDepuisMap = mapQuiContientLesLots.get(clefAccesAuxLots) ?: throw java.lang.IllegalStateException("Le lot ${clefAccesAuxLots} n'a pas été trouvé en mémoire.")
+        val getMaskLotDepuisMap = mapQuiContientLesLots.get(clefAccesAuxLots)
+            ?: throw java.lang.IllegalStateException("Le lot ${clefAccesAuxLots} n'a pas été trouvé en mémoire.")
         return getMaskLotDepuisMap
     }
 
@@ -67,8 +67,8 @@ class ServiceAccesAuCacheDesLots {
             maskMessage.entete.dateHeureDemande,
             lotRecu.codeUtilisateur,
             mutableListOf<MaskProduit>(),
-            mutableListOf<MaskAction>(),
-            false
+            mutableListOf<MaskActionDeGeneration>(),
+            mutableListOf<MaskActionDeRestitution>()
         )
     }
 
@@ -101,8 +101,28 @@ class ServiceAccesAuCacheDesLots {
 
     }
 
-    //TODO renvoye copie de la MAp => à verifier avec Renaud
     fun afficheMapQuiContientLesLots(): Map<ClefAccesAuxLots, MaskLot> = mapQuiContientLesLots.toMap()
+
+    fun demarrerLot(question: MaskMessage): MaskMessage {
+        controleDesDonneesDeObjetMetierLot(question.recupererObjetMetier<Lot>(), question)
+        LOG.info("Mise en mémoire de la demande de type : ${question.entete.typeDemande} - Emetteur : ${question.entete.idEmetteur} - Greffe : ${question.entete.idGreffe} - Lot : ${question.entete.idLot}")
+        ajoutOuMiseAJourLots(question)
+        afficheMapQuiContientLesLots()
+        return question
+    }
+
+    private fun controleDesDonneesDeObjetMetierLot(
+        lot: Lot,
+        question: MaskMessage
+    ) {
+        requireNotNull(lot.identifiant)
+        requireNotNull(lot.dateDemande)
+        requireNotNull(lot.codeUtilisateur)
+        require(lot.identifiant == question.entete.idLot) { "L'identifiant du lot dans l'entete et celui dans " }
+    }
+
+
+
 
 }
 
