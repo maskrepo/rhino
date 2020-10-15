@@ -11,10 +11,7 @@ import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
 @ApplicationScoped
-class EcouteDemarrerLotDemande {
-
-    @Inject
-    lateinit var serviceAccesAuCacheDesLots: ServiceAccesAuCacheDesLots
+class EcouteDemarrerLotDemande(@Inject var serviceAccesAuCacheDesLots: ServiceAccesAuCacheDesLots) {
 
     companion object {
         private val LOG: Logger = LoggerFactory.getLogger(EcouteDemarrerLotDemande::class.java)
@@ -25,9 +22,8 @@ class EcouteDemarrerLotDemande {
     fun demarrerLot(question: MaskMessage): MaskMessage {
         controleDesDonneesDeEntete(question)
         controleDesDonneesDeObjetMetierLot(question.recupererObjetMetier<Lot>(), question)
-        EcouteDemarrerLotDemande.LOG.info("Réception d'une demande de type : ${question.entete.typeDemande} - indentifiant lot : ${question.entete.idLot} - details : ${question}")
-
-        EcouteDemarrerLotDemande.LOG.info("Mise en mémoire de la demande de type : ${question.entete.typeDemande} - Emetteur : ${question.entete.idEmetteur} - Greffe : ${question.entete.idGreffe} - Lot : ${question.entete.idLot}")
+        LOG.info("Réception d'une demande de type : ${question.entete.typeDemande} - indentifiant lot : ${question.entete.idLot} - details : ${question}")
+        LOG.info("Mise en mémoire de la demande de type : ${question.entete.typeDemande} - Emetteur : ${question.entete.idEmetteur} - Greffe : ${question.entete.idGreffe} - Lot : ${question.entete.idLot}")
         serviceAccesAuCacheDesLots.ajoutOuMiseAJourLots(question)
         serviceAccesAuCacheDesLots.afficheMapQuiContientLesLots()
         return question
@@ -47,6 +43,8 @@ class EcouteDemarrerLotDemande {
         requireNotNull(question.entete)
         requireNotNull(question.entete.idLot) { "idLot est obligatoire, or il est à null dans le message de démarrage de lot" }
         requireNotNull(question.entete.typeDemande) { "Le type de demande n'a pas été positionné" }
+        requireNotNull(question.entete.idGreffe) { "L'idGreffe n'a pas été positionné" }
+        requireNotNull(question.entete.idEmetteur) { "L'idEmetteur n'a pas été positionné" }
         require(question.entete.typeDemande == "lot")
     }
 
