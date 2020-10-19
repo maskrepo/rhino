@@ -2,11 +2,14 @@ package fr.convergence.proddoc.reactive
 
 import fr.convergence.proddoc.model.ClefAccesAuxLots
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
+import fr.convergence.proddoc.model.metier.Evenement
 import fr.convergence.proddoc.model.metier.Produit
 import fr.convergence.proddoc.service.ServiceAccesAuCacheDesLots
 import fr.convergence.proddoc.service.ServiceGenerationLot
 import fr.convergence.proddoc.service.ServiceInterpretationLot
 import io.vertx.core.logging.LoggerFactory.*
+import org.eclipse.microprofile.reactive.messaging.Channel
+import org.eclipse.microprofile.reactive.messaging.Emitter
 import org.eclipse.microprofile.reactive.messaging.Incoming
 import org.eclipse.microprofile.reactive.messaging.Outgoing
 import javax.enterprise.context.ApplicationScoped
@@ -23,38 +26,37 @@ class EcouteProduitsDemande(
         private val LOG = getLogger(EcouteProduitsDemande::class.java)
     }
 
+    @Inject
+    @field: Channel("produits_reponse")
+    val actionProduitReponseEmitter: Emitter<MaskMessage>? = null
+
     @Incoming("produits_demande")
-    @Outgoing("produits_reponse")
-    fun receptionProduits(question: MaskMessage): MaskMessage {
+    fun receptionProduits(question: MaskMessage) {
 
         LOG.info("Réception d'une demande de type : ${question.entete.typeDemande} - indentifiant lot : ${question.entete.idLot} - details : ${question}")
         controleDesDonneesDeEntete(question)
-        val produit = question.recupererObjetMetier<Produit>()
-        controleDonneesDeObjetMetierProduit(produit)
 
         val clefAccesAuxLots =
             ClefAccesAuxLots(question.entete.idEmetteur, question.entete.idGreffe, question.entete.idLot!!)
 
         when (question.entete.typeDemande) {
-            "DEMARRER LOT" -> {
-                serviceAccesAuCacheDesLots.demarrerLot(question)
-            };
 
-            "AJOUT PRODUIT" -> {
+            "AJOUT_PRODUIT" -> {
+                val evenement = question.recupererObjetMetier<Evenement>();
+                val produit = Produit(question.entete.typeDemande, evenement)
+                controleDonneesDeObjetMetierProduit(produit)
+
                 val maskProduit = serviceAccesAuCacheDesLots.ajoutProduitsDansLeLot(clefAccesAuxLots, produit)
                 serviceInterpretationLot.interpreterProduit(maskProduit)
-            };
+                actionProduitReponseEmitter!!.send(MaskMessage.reponseOk("Ok", question, question.entete.idReference))
+            }
 
-            "INTERPRETATION LOT" -> {
-                question
-            };
-            "GENERER LOT" -> {
+            "RESTITUER_LOT" -> {
                 serviceGenerationLot.genererLot(clefAccesAuxLots)
-            };
+            }
+
             else -> throw IllegalStateException("reception d'un produit contenant un typeEvenement inconnu")
         }
-
-        return MaskMessage.reponseOk("Ok", question, question.entete.idReference)
     }
 
     private fun controleDesDonneesDeEntete(question: MaskMessage) {
@@ -68,5 +70,4 @@ class EcouteProduitsDemande(
     private fun controleDonneesDeObjetMetierProduit(produit: Produit) {
         requireNotNull(produit.typeEvenement)
     }
-
 }

@@ -4,8 +4,10 @@ import fr.convergence.proddoc.model.ActionEtat
 import fr.convergence.proddoc.model.MaskActionDeGeneration
 import fr.convergence.proddoc.model.MaskActionDeRestitution
 import fr.convergence.proddoc.model.MaskProduit
+import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
+@ApplicationScoped
 class ServiceInterpretationLot(@Inject var serviceAccesAuCacheDesLots: ServiceAccesAuCacheDesLots) {
 
     fun interpreterProduit(maskProduit: MaskProduit) {

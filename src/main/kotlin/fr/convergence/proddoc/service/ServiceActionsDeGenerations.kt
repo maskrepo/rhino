@@ -14,8 +14,10 @@ import org.eclipse.microprofile.reactive.messaging.Channel
 import org.eclipse.microprofile.reactive.messaging.Emitter
 import java.time.LocalDateTime
 import java.util.*
+import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
+@ApplicationScoped
 class ServiceActionsDeGenerations {
 
     companion object {
@@ -32,10 +34,12 @@ class ServiceActionsDeGenerations {
         maskActionDeGeneration: MaskActionDeGeneration
     ) {
         LOG.info("actionDemandeKbis - Lot : ${clefAccesAuxLots} - Produit :  ${maskProduit}")
-        val numeroGestion = maskProduit.mapObjetMetier!!.getValue("REGISTRE")
+        val identifiantRegistre = maskProduit.mapObjetMetier!!.getValue("REGISTRE")
         val avecApostille = maskProduit.pourApostille ?: false
+        LOG.info("Demande de KBIS pour le registre: ${identifiantRegistre}")
         val kbisDemande = KbisDemande(
-            numeroGestion = numeroGestion,
+            numeroGestion = null,
+            identifiantRegistre = identifiantRegistre.toLong(),
             avecApostille = avecApostille,
             avecSceau = false,
             avecSignature = false

@@ -11,8 +11,10 @@ import org.eclipse.microprofile.reactive.messaging.Channel
 import org.eclipse.microprofile.reactive.messaging.Emitter
 import java.time.LocalDateTime
 import java.util.*
+import javax.enterprise.context.ApplicationScoped
 import javax.inject.Inject
 
+@ApplicationScoped
 class ServiceRestituerParImpression {
 
     companion object {
@@ -26,7 +28,7 @@ class ServiceRestituerParImpression {
     fun impressionDemande(urlFichierAImprimer : String, clefAccesAuxLots : ClefAccesAuxLots){
 
         LOG.info("actionImpressionDemande : ${clefAccesAuxLots} ")
-        val impressionDemande = DemandeImpression(IDsortieDocument = "" ,urlFichierAImprimer = urlFichierAImprimer ,rectoVerso = true,nomImprimante = "",nomBacEntree = "",nbExemplaires = 1 )
+        val impressionDemande = DemandeImpression(iDsortieDocument = null ,urlFichierAImprimer = urlFichierAImprimer ,rectoVerso = true, nomImprimante = "", nomBacEntree = "", nbExemplaires = 1)
 
         val maskEntete = MaskEntete(
             idUnique = UUID.randomUUID().toString(),

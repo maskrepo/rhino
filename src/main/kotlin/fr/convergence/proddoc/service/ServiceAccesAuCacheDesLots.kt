@@ -1,6 +1,9 @@
 package fr.convergence.proddoc.service
 
-import fr.convergence.proddoc.model.*
+import fr.convergence.proddoc.model.ClefAccesAuxLots
+import fr.convergence.proddoc.model.MaskActionDeGeneration
+import fr.convergence.proddoc.model.MaskLot
+import fr.convergence.proddoc.model.MaskProduit
 import fr.convergence.proddoc.model.lib.obj.MaskMessage
 import fr.convergence.proddoc.model.metier.Lot
 import fr.convergence.proddoc.model.metier.Produit
@@ -32,15 +35,15 @@ class ServiceAccesAuCacheDesLots {
         }
     }
 
-    fun ajoutProduitsDansLeLot(clefAccesAuxLots: ClefAccesAuxLots, produit: Produit) : MaskProduit {
+    fun ajoutProduitsDansLeLot(clefAccesAuxLots: ClefAccesAuxLots, produit: Produit): MaskProduit {
         val maskLot = getMaskLotDepuisMapQuiContientLesLots(clefAccesAuxLots)
-        if (maskLot.peutOnDemarrerInterpretation == true ) {
+        if (maskLot.peutOnDemarrerInterpretation == true) {
             throw IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que l'interpretation du lot ${maskLot} est demarrée")
         }
-        if (maskLot.peutOnDemarrerRestitution == true ) {
+        if (maskLot.peutOnDemarrerRestitution == true) {
             throw IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que la restitution du lot ${maskLot} est demarrée")
         }
-        if (maskLot.peutOnDemarrerGeneration == true ) {
+        if (maskLot.peutOnDemarrerGeneration == true) {
             throw IllegalStateException("Reception d'un evenement AJOUT_PRODUIT alors que la generation du lot ${maskLot} est demarrée")
         }
         val maskProduit = obtenirMaskProduitDepuisProduitMyGreffe(produit)
@@ -66,49 +69,42 @@ class ServiceAccesAuCacheDesLots {
             maskMessage.entete.typeDemande,
             maskMessage.entete.dateHeureDemande,
             lotRecu.codeUtilisateur,
-            mutableListOf<MaskProduit>(),
-            mutableListOf<MaskActionDeGeneration>(),
-            mutableListOf<MaskActionDeRestitution>()
+            mutableListOf<MaskProduit>()
         )
     }
 
     fun obtenirMaskProduitDepuisProduitMyGreffe(produit: Produit): MaskProduit {
         return MaskProduit(
-            produit.typeEvenement,
-            MaskEvenement(
-                produit.evenement.idLot + "_" + UUID.randomUUID().toString(),
-                produit.evenement.codeProduit,
-                produit.evenement.mapObjetMetier,
-                produit.evenement.listeTypesLignesGerees,
-                produit.evenement.listeIndicateur,
-                produit.evenement.nombreExemplaires,
-                produit.evenement.pourApostille,
-                produit.evenement.produit,
-                produit.evenement.sortieLot,
-                produit.evenement.reference,
-                produit.evenement.listeIndicateurEntite,
-                produit.evenement.sortieEdition,
-                produit.evenement.mapSortieDestinataire,
-                produit.evenement.description,
-                produit.evenement.descriptionKbis,
-                produit.evenement.typeDocumentGed,
-                produit.evenement.dateTarif,
-                produit.evenement.mapDestinataires,
-                produit.evenement.listSortieDestinataire
-            )
 
+            produit.evenement.idLot + "_" + UUID.randomUUID().toString(),
+            produit.evenement.codeProduit,
+            produit.evenement.mapObjetMetier,
+            produit.evenement.listeTypesLignesGerees,
+            produit.evenement.listeIndicateur,
+            produit.evenement.nombreExemplaires,
+            produit.evenement.pourApostille,
+            produit.evenement.produit,
+            produit.evenement.sortieLot,
+            produit.evenement.reference,
+            produit.evenement.listeIndicateurEntite,
+            produit.evenement.sortieEdition,
+            produit.evenement.mapSortieDestinataire,
+            produit.evenement.description,
+            produit.evenement.descriptionKbis,
+            produit.evenement.typeDocumentGed,
+            produit.evenement.dateTarif,
+            produit.evenement.mapDestinataires,
+            produit.evenement.listSortieDestinataire,
+            mutableListOf<MaskActionDeGeneration>()
         )
-
     }
 
     fun afficheMapQuiContientLesLots(): Map<ClefAccesAuxLots, MaskLot> = mapQuiContientLesLots.toMap()
 
-    fun demarrerLot(question: MaskMessage): MaskMessage {
-        controleDesDonneesDeObjetMetierLot(question.recupererObjetMetier<Lot>(), question)
+    fun demarrerLot(question: MaskMessage) {
+        controleDesDonneesDeObjetMetierLot(question.recupererObjetMetier(), question)
         LOG.info("Mise en mémoire de la demande de type : ${question.entete.typeDemande} - Emetteur : ${question.entete.idEmetteur} - Greffe : ${question.entete.idGreffe} - Lot : ${question.entete.idLot}")
         ajoutOuMiseAJourLots(question)
-        afficheMapQuiContientLesLots()
-        return question
     }
 
     private fun controleDesDonneesDeObjetMetierLot(
@@ -120,9 +116,5 @@ class ServiceAccesAuCacheDesLots {
         requireNotNull(lot.codeUtilisateur)
         require(lot.identifiant == question.entete.idLot) { "L'identifiant du lot dans l'entete et celui dans " }
     }
-
-
-
-
 }
 
